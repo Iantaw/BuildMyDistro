@@ -1,11 +1,11 @@
-import ListGroup from "./components/ListGroup";
+import Button from "./components/Button";
 
 function App() {
-  let items = ["New York", "San Francisco", "Tokyo", "London", "Paris"];
-
   return (
     <div>
-      <ListGroup items={items} heading="Cities" />
+      <Button>
+        Hello
+      </Button>
     </div>
   );
 }
