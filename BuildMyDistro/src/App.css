@@ -1,10 +1,8 @@
 .animated-gradient-text {
-  position: absolute;
-  top: 50px;
-  left: 0px;
+  position: relative;
   width: 100%;
+  margin-top: 30px;
   text-align: center;
-  margin: 0;
   border-radius: 1.25rem;
   font-weight: 500;
   font-size: 50px;
@@ -61,11 +59,160 @@
   animation: gradient linear infinite;
 }
 
-.description {
+.title-description {
   font-size: 20px;
-  position: absolute;
-  top: 100px;
-  width: 100%;
+  position: relative;
+  margin-bottom: 60px;
   text-align: center;
   align-items: center;
+}
+
+.os-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.os-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.security-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.security-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.browser-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.browsers-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.social-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.social-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.hyprland-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.hyprland-customization-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.multimedia-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.multimedia-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.productivity-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.productivity-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.devtools-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.devtools-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.gaming-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.gaming-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.btn {
+  margin-right: 10px;
 }
