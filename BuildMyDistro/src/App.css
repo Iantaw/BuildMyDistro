@@ -216,3 +216,17 @@
 .btn {
   margin: 5px;
 }
+
+.disclaimer {
+  text-align: center;
+  font-weight: bold;
+  margin: 10px;
+  margin-bottom: 30px;
+}
+
+.submit-button {
+  position: relative;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 50px;
+}

@@ -8,6 +8,7 @@ function App() {
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [selectedOS, setSelectedOS] = useState<string | undefined>(undefined)
   const osOptions = ['Debian', 'Arch', 'Ubuntu']
+  const [isClicked, setIsClicked] = useState(false);
   const [selectedSecurity, setSelectedSecurity] = useState<string[]>([])
   const [selectedBrowsers, setSelectedBrowsers] = useState<string[]>([])
   const [selectedSocial, setSelectedSocial] = useState<string[]>([])
@@ -68,6 +69,8 @@ function App() {
       console.log('API key not loaded yet')
       return
     }
+
+    setIsClicked(true);
 
     try {
       const ai = new GoogleGenAI({
@@ -172,14 +175,22 @@ function App() {
         'gaming-selector'
       )}
       <p className="disclaimer">
-        How this works: This will generate a .sh file for you to execute to instal the above.
-        ISO file coming in future iterations!
+        How this works: This will generate a .sh file for you to execute to install the above.
+        ISO file generation coming in future iteration!
       </p>
-      <button className="btn btn-success mt-4" onClick={handleSubmit}>
-        Submit Build
-      </button>
+      <div className='submit-button'>
+        {isClicked ? (
+            <div className="spinner-border" role="status">
+              <span className="sr-only"></span>
+            </div>
+          ) : (
+            <button className="btn btn-success mt-4" onClick={handleSubmit}>
+              Generate Build
+            </button>          
+          )}
+      </div>
     </>
-  )
+  );
 }
 
 export default App
