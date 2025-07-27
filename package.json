@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.52.1",
+    "react-code-block": "^1.1.3",
+    "react-use": "^17.6.0",
     "vite": "^7.0.5"
   }
 }

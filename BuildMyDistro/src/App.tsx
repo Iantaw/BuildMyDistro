@@ -1,33 +1,38 @@
-import './App.css'
-import GradientText from './GradientText.tsx'
-import { useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
-import { GoogleGenAI } from '@google/genai'
-import { CopyBlock, github } from 'react-code-blocks';
+import './App.css';
+import GradientText from './GradientText.tsx';
+import { useEffect, useState } from 'react';
+import { supabase } from './supabaseClient';
+import { GoogleGenAI } from '@google/genai';
+import CodeBlockDemo from './CodeBlockDemo';
 
 function App() {
-  const [apiKey, setApiKey] = useState<string | null>(null)
-  const [selectedOS, setSelectedOS] = useState<string | undefined>(undefined)
-  const osOptions = ['Debian', 'Arch', 'Ubuntu']
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [selectedOS, setSelectedOS] = useState<string | undefined>(undefined);
+  const osOptions = ['Debian', 'Arch', 'Ubuntu'];
   const [isClicked, setIsClicked] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [selectedSecurity, setSelectedSecurity] = useState<string[]>([])
-  const [selectedBrowsers, setSelectedBrowsers] = useState<string[]>([])
-  const [selectedSocial, setSelectedSocial] = useState<string[]>([])
-  const [selectedHyprland, setSelectedHyprland] = useState<string[]>([])
-  const [selectedMultimedia, setSelectedMultimedia] = useState<string[]>([])
-  const [selectedProductivity, setSelectedProductivity] = useState<string[]>([])
-  const [selectedDevtools, setSelectedDevtools] = useState<string[]>([])
-  const [selectedGaming, setSelectedGaming] = useState<string[]>([])
+
+  const [selectedSecurity, setSelectedSecurity] = useState<string[]>([]);
+  const [selectedBrowsers, setSelectedBrowsers] = useState<string[]>([]);
+  const [selectedSocial, setSelectedSocial] = useState<string[]>([]);
+  const [selectedHyprland, setSelectedHyprland] = useState<string[]>([]);
+  const [selectedMultimedia, setSelectedMultimedia] = useState<string[]>([]);
+  const [selectedProductivity, setSelectedProductivity] = useState<string[]>([]);
+  const [selectedDevtools, setSelectedDevtools] = useState<string[]>([]);
+  const [selectedGaming, setSelectedGaming] = useState<string[]>([]);
 
   const toggleSelection = (
     item: string,
     selected: string[],
     setSelected: (val: string[]) => void
   ) => {
-    setSelected(selected.includes(item) ? selected.filter(i => i !== item) : [...selected, item])
-  }
+    setSelected(
+      selected.includes(item)
+        ? selected.filter(i => i !== item)
+        : [...selected, item]
+    );
+  };
 
   const createButtonGroup = (
     items: string[],
@@ -48,7 +53,7 @@ function App() {
         </button>
       ))}
     </div>
-  )
+  );
 
   useEffect(() => {
     async function loadApiKey() {
@@ -56,40 +61,38 @@ function App() {
         .from('secrets')
         .select('key')
         .eq('name', 'VITE_GEMINI_API_KEY')
-        .single()
+        .single();
 
       if (data?.key) {
-        setApiKey(data.key)
+        setApiKey(data.key);
       } else {
-        console.error('Error loading Gemini API key:', error)
+        console.error('Error loading Gemini API key:', error);
       }
     }
-    loadApiKey()
-  }, [])
+
+    loadApiKey();
+  }, []);
 
   async function handleSubmit() {
     setIsClicked(true);
+
     if (!apiKey) {
-      console.log('API key not loaded yet')
       alert('Sorry! We encountered an error, please try again later.');
-      return
+      return;
     }
 
     try {
-      const ai = new GoogleGenAI({
-        apiKey: apiKey,
-      })
+      const ai = new GoogleGenAI({ apiKey });
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: 'Explain how AI works in a few words',
-      })
+      });
 
-      console.log('AI response:', response.text)
       setAiResponse(response.text ?? 'No response');
       setIsDone(true);
     } catch (error) {
-      console.error('Error generating content:', error)
+      console.error('Error generating content:', error);
     }
   }
 
@@ -104,7 +107,9 @@ function App() {
         >
           BuildMyDistro
         </GradientText>
+
         <p className="title-description">A simple way to customize your own Distro!</p>
+
         <p className="os-description">Operating System</p>
         <div className="os-selector d-flex justify-content-center gap-2">
           {osOptions.map(os => (
@@ -119,6 +124,7 @@ function App() {
             </button>
           ))}
         </div>
+
         <p className="security-description">Security</p>
         {createButtonGroup(
           ['ufw', 'ClamAV', 'KeepassXC', 'Tor Browser', 'WireGuard'],
@@ -126,6 +132,7 @@ function App() {
           setSelectedSecurity,
           'security-selector'
         )}
+
         <p className="browser-description">Browser</p>
         {createButtonGroup(
           ['Firefox', 'Brave', 'Chromium'],
@@ -133,6 +140,7 @@ function App() {
           setSelectedBrowsers,
           'browsers-selector'
         )}
+
         <p className="social-description">Social</p>
         {createButtonGroup(
           ['Discord', 'Telegram', 'Element'],
@@ -140,6 +148,7 @@ function App() {
           setSelectedSocial,
           'social-selector'
         )}
+
         {selectedOS === 'Arch' && (
           <>
             <p className="hyprland-description">Hyprland Customization</p>
@@ -151,6 +160,7 @@ function App() {
             )}
           </>
         )}
+
         <p className="multimedia-description">Multimedia</p>
         {createButtonGroup(
           ['VLC', 'MPV', 'Pavucontrol', 'Spotify'],
@@ -158,6 +168,7 @@ function App() {
           setSelectedMultimedia,
           'multimedia-selector'
         )}
+
         <p className="productivity-description">Productivity</p>
         {createButtonGroup(
           ['LibreOffice', 'Evince', 'OnlyOffice', 'Zettlr'],
@@ -165,6 +176,7 @@ function App() {
           setSelectedProductivity,
           'productivity-selector'
         )}
+
         <p className="devtools-description">Devtools</p>
         {createButtonGroup(
           ['VS Code', 'Neovim', 'Git', 'Kitty', 'Flatpak'],
@@ -172,6 +184,7 @@ function App() {
           setSelectedDevtools,
           'devtools-selector'
         )}
+
         <p className="gaming-description">Gaming</p>
         {createButtonGroup(
           ['Steam', 'Lutris', 'MangoHUD', 'GameMode'],
@@ -179,31 +192,23 @@ function App() {
           setSelectedGaming,
           'gaming-selector'
         )}
+
         <p className="disclaimer">
           How this works: This will generate a .sh file for you to execute to install the above.
           ISO file generation coming in future iteration!
         </p>
-        <div className='submit-button'>
+
+        <div className="submit-button">
           {isDone ? (
-            <div className='code-output'>
-              <CopyBlock
-                text={aiResponse || ''}
-                language="text"
-                showLineNumbers={false}
-                theme={github}
-                wrapLongLines
-              />
-            </div>
+            <CodeBlockDemo code={aiResponse || ''} language="bash" />
           ) : isClicked ? (
             <div className="spinner-border" role="status">
               <span className="sr-only"></span>
             </div>
           ) : (
-            <div>
-              <button className="btn btn-success mt-4" onClick={handleSubmit}>
-                Generate Build
-              </button>
-            </div>
+            <button className="btn btn-success mt-4" onClick={handleSubmit}>
+              Generate Build
+            </button>
           )}
         </div>
       </div>
@@ -211,4 +216,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
