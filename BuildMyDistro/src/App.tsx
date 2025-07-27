@@ -247,6 +247,19 @@ function App() {
     }
   }
 
+  const handleDownload = () => {
+      const blob = new Blob([aiResponse || ''], { type: 'application/x-sh' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'my-custom-distro.sh';
+      document.body.appendChild(link);
+      link.click(); 
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <div className="main-container">
@@ -351,7 +364,11 @@ function App() {
 
         <div className="submit-button">
           {isDone ? (
-            <CodeBlockDemo code={aiResponse || ''} language="bash" />
+            <div>
+              <CodeBlockDemo code={aiResponse || ''} language="bash" />
+              <button className='download-button' onClick={handleDownload}>Download my distro!</button>
+              <p className='instructions'>Run this .sh file in your selected distro to add these tools!</p>
+            </div>
           ) : isClicked ? (
             <div className="spinner-border" role="status">
               <span className="sr-only"></span>

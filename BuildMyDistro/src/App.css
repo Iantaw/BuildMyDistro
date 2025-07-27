@@ -246,3 +246,11 @@
   box-shadow: 0 0 20px rgba(0,0,0,0.1);
   background-color: #fff;
 }
+
+.download-button {
+  margin-top: 20px;
+}
+
+.instructions {
+  margin-top: 10px;
+}
