@@ -472,6 +472,14 @@ function App() {
         Tor Browser: sudo apt install -y torbrowser-launcher
         WireGuard: sudo apt install -y wireguard
 
+        (Desktop Environment, make sure to only install ${selectedDebianEnvironment})
+        KDE Plasma: sudo apt install kde-standard
+        GNOME: sudo apt install gnome-session
+        Xfce: sudo apt install xubuntu-desktop
+        LXDE: sudo apt install lxde
+        LXQt: sudo apt install lubuntu-desktop
+        MATE: sudo apt install mate-desktop-environment mate-desktop-environment-extras ubuntu-mate-themes
+
         (Multimedia, make sure to only install ${selectedMultimedia})
         VLC: sudo apt install -y vlc
         MPV: sudo apt install -y mpv
@@ -509,8 +517,9 @@ function App() {
       .replace(/\${selectedProductivity}/g, selectedProductivity.join(', '))
       .replace(/\${selectedDevtools}/g, selectedDevtools.join(', '))
       .replace(/\${selectedGaming}/g, selectedGaming.join(', '))
-      .replace(/\${selectedHyprland}/g, selectedHyprland.join(', '));
-  }
+      .replace(/\${selectedHyprland}/g, selectedHyprland.join(', '))
+      .replace(/\${selectedDebianEnvironment}/g, selectedDebianEnvironment || '');
+    }
 
   return (
     <>
