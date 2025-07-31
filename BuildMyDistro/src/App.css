@@ -1,7 +1,9 @@
-.main-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
 }
 
 .animated-gradient-text {

@@ -8,6 +8,8 @@ import promptText from './assets/iso-prompt-template.txt?raw';
 
 function App() {
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const debianEnvironmentOptions = ['Debian', 'Arch', 'Ubuntu'];
+  const [selectedDebianEnvironment, setSelectedDebianEnvironment] = useState<string>(debianEnvironmentOptions[1]);;
   const osOptions = ['Debian', 'Arch', 'Ubuntu'];
   const [selectedOS, setSelectedOS] = useState<string>(osOptions[1]);;
   const [isClicked, setIsClicked] = useState(false);
@@ -490,7 +492,7 @@ function App() {
   }
 
   return (
-    <div className="main-container">
+    <>
       <GradientText
         colors={['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa']}
         animationSpeed={3}
@@ -547,7 +549,7 @@ function App() {
       <p className="disclaimer">How this works: This will generate a .sh file or ISO for your system!</p>
 
       <div className="submit-button">{renderSubmitSection()}</div>
-    </div>
+    </>
   );
 }
 
