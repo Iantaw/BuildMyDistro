@@ -117,6 +117,7 @@ Resume as normal for both debian and ubuntu below.
 - Tor Browser: `chroot /tmp/work/chroot apt-get install -y torbrowser-launcher`
 - WireGuard: `chroot /tmp/work/chroot apt-get install -y wireguard`
 
+DESKTOP Environment IS ONLY FOR DEBIAN!!! DO NOT RUN DESKTOP ENVIRONMENT ON UBUNTU!!!
 (Desktop Environment, install only ${selectedDebianEnvironment})
 - KDE Plasma: `sudo chroot /tmp/work/chroot apt-get install -y plasma-desktop`
 - GNOME: `sudo chroot /tmp/work/chroot apt-get install -y ubuntu-desktop`
