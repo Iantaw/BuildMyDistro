@@ -157,6 +157,22 @@ body {
   margin-bottom: 30px;
 }
 
+.desktop-environment-description {
+  font-size: 22px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.desktop-environment-selector {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
 .multimedia-description {
   font-size: 22px;
   position: relative;

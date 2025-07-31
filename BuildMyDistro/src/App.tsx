@@ -8,8 +8,8 @@ import promptText from './assets/iso-prompt-template.txt?raw';
 
 function App() {
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const debianEnvironmentOptions = ['Debian', 'Arch', 'Ubuntu'];
-  const [selectedDebianEnvironment, setSelectedDebianEnvironment] = useState<string>(debianEnvironmentOptions[1]);;
+  const debianEnvironmentOptions = ['Plasma', 'Xfce', 'LXDE', 'GNOME', 'LXQt', 'MATE'];
+  const [selectedDebianEnvironment, setSelectedDebianEnvironment] = useState<string>(debianEnvironmentOptions[3]);;
   const osOptions = ['Debian', 'Arch', 'Ubuntu'];
   const [selectedOS, setSelectedOS] = useState<string>(osOptions[1]);;
   const [isClicked, setIsClicked] = useState(false);
@@ -67,6 +67,27 @@ function App() {
       ))}
     </div>
   );
+
+  const createSingleSelectButtonGroup = (
+    items: string[],
+    selected: string,
+    setSelected: (val: string) => void,
+    className: string
+  ) => (
+    <div className={className}>
+      {items.map(item => (
+        <button
+          key={item}
+          type="button"
+          className={`btn btn-outline-primary ${selected === item ? 'active' : ''}`}
+          onClick={() => setSelected(item)}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+
 
   useEffect(() => {
     async function loadApiKey() {
@@ -531,6 +552,13 @@ function App() {
         <>
           <p className="hyprland-description">Hyprland Customization</p>
           {createButtonGroup(['Hyprland', 'Waybar, Wofi, Rofi', 'Pywal', 'Kitty', 'LXAppearance'], selectedHyprland, setSelectedHyprland, 'hyprland-customization-selector')}
+        </>
+      )}
+
+      {selectedOS === 'Debian' && (
+        <>
+          <p className="desktop-environment-description">Desktop Environment</p>
+          {createSingleSelectButtonGroup(debianEnvironmentOptions, selectedDebianEnvironment, setSelectedDebianEnvironment, 'desktop-environment-selector')}
         </>
       )}
 
