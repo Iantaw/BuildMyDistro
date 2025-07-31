@@ -1,0 +1,159 @@
+You are to generate only a valid `.sh` file that builds a customized Linux ISO using the selected tools.
+
+⚠️ You must follow these instructions exactly:
+- Do not write anything other than the `.sh` script.
+- Do not acknowledge this prompt.
+- Do not include comments, explanations, or extra text outside the script.
+- Do not use emojis, terminal colors, or styled output.
+- Make sure you use Unix/Linux formatting. DO NOT use windows formatting.
+- Make sure to use Unix Style line endings (LF).
+- Feel free to use sudo, as passwordless sudo has been configured.
+- Make sure to run apt-get update inside the chroot BEFORE installing the packages.
+- You must insert the following plain echo statements before each major section to help an external server track progress:
+    - `echo "Mounting"`
+    - `echo "Installing"`
+    - `echo "Configuring"`
+    - `echo "Building"`
+    - `echo "Complete"`
+
+🛠 Script Constraints:
+- This `.sh` file will be made for: **${selectedOS}**
+- Only use the commands listed under that OS.
+- Only install the tools the user selected from each category.
+- The final ISO **must be saved** to `/opt/iso-builder/output` with any filename (e.g. `/opt/iso-builder/output/custom-${selectedOS}.iso`).
+- The ISO will be considered invalid if it's saved elsewhere.
+- The Base ISO files are located in:
+    Ubuntu: `/opt/iso-builder/base-isos/ubuntu/noble-desktop-amd64.iso`
+    Arch: `/opt/iso-builder/base-isos/arch/archlinux-2025.07.01-x86_64.iso`
+    Debian: `/opt/iso-builder/base-isos/debian/debian-12.11.0-amd64-netinst.iso`
+
+---
+
+### 🔧 ISO Modification Commands Table
+
+**Arch Linux ISO:**
+
+(Browsers, install only ${selectedBrowsers})
+- Firefox: `echo 'firefox' >> /tmp/work/packages.x86_64`
+- Brave: `echo -e 'brave-bin\nyay' >> /tmp/work/packages.x86_64`
+- Chromium: `echo 'chromium' >> /tmp/work/packages.x86_64`
+
+(Social, install only ${selectedSocial})
+- Discord: `echo 'discord' >> /tmp/work/packages.x86_64`
+- Telegram: `echo 'telegram-desktop' >> /tmp/work/packages.x86_64`
+- Element: `echo 'element-desktop' >> /tmp/work/packages.x86_64`
+
+(Security, install only ${selectedSecurity})
+- ufw: `echo 'ufw' >> /tmp/work/packages.x86_64`
+- ClamAV: `echo 'clamav' >> /tmp/work/packages.x86_64`
+- KeepassXC: `echo 'keepassxc' >> /tmp/work/packages.x86_64`
+- Tor Browser: `echo 'tor-browser' >> /tmp/work/packages.x86_64 && echo 'yay' >> /tmp/work/packages.x86_64`
+- WireGuard: `echo 'wireguard-tools' >> /tmp/work/packages.x86_64`
+
+(Multimedia, install only ${selectedMultimedia})
+- VLC: `echo 'vlc' >> /tmp/work/packages.x86_64`
+- MPV: `echo 'mpv' >> /tmp/work/packages.x86_64`
+- Pavucontrol: `echo 'pavucontrol' >> /tmp/work/packages.x86_64`
+- Spotify: `echo -e 'spotify\nyay' >> /tmp/work/packages.x86_64`
+
+(Productivity, install only ${selectedProductivity})
+- LibreOffice: `echo 'libreoffice-fresh' >> /tmp/work/packages.x86_64`
+- Evince: `echo 'evince' >> /tmp/work/packages.x86_64`
+- OnlyOffice: `echo -e 'onlyoffice-bin\nyay' >> /tmp/work/packages.x86_64`
+- Zettlr: `echo -e 'zettlr-bin\nyay' >> /tmp/work/packages.x86_64`
+
+(Devtools, install only ${selectedDevtools})
+- VS Code: `echo -e 'visual-studio-code-bin\nyay' >> /tmp/work/packages.x86_64`
+- Neovim: `echo 'neovim' >> /tmp/work/packages.x86_64`
+- Git: `echo 'git' >> /tmp/work/packages.x86_64`
+- Kitty: `echo 'kitty' >> /tmp/work/packages.x86_64`
+- Flatpak: `echo 'flatpak' >> /tmp/work/packages.x86_64`
+
+(Gaming, install only ${selectedGaming})
+- Steam: `echo 'steam' >> /tmp/work/packages.x86_64`
+- Lutris: `echo 'lutris' >> /tmp/work/packages.x86_64`
+- MangoHUD: `echo 'mangohud' >> /tmp/work/packages.x86_64`
+- GameMode: `echo 'gamemode' >> /tmp/work/packages.x86_64`
+
+(Hyprland Customization, install only ${selectedHyprland})
+- Hyprland: `echo 'hyprland' >> /tmp/work/packages.x86_64`
+- Waybar, Wofi, Rofi: `echo -e 'waybar\nwofi\nrofi' >> /tmp/work/packages.x86_64`
+- Pywal: `echo 'python-pywal' >> /tmp/work/packages.x86_64`
+- Kitty: `echo 'kitty' >> /tmp/work/packages.x86_64`
+- LXAppearance: `echo 'lxappearance' >> /tmp/work/packages.x86_64`
+
+---
+
+**Ubuntu/Debian ISO:**
+
+ONLY FOR DEBIAN, Before installing packages, ensure the script configures the Debian package sources by creating or overwriting the file /etc/apt/sources.list inside the chroot directory with the following lines:
+
+deb http://deb.debian.org/debian bookworm main contrib non-free
+deb http://security.debian.org/debian-security bookworm-security main
+deb http://deb.debian.org/debian bookworm-updates main contrib non-free
+
+This should be done by a command such as:
+
+cat <<EOF > "$WORKDIR/chroot/etc/apt/sources.list"
+deb http://deb.debian.org/debian bookworm main contrib non-free
+deb http://security.debian.org/debian-security book
+
+Resume as normal for both debian and ubuntu below.
+
+(Browsers, install only ${selectedBrowsers})
+- Firefox: `chroot /tmp/work/chroot apt-get install -y firefox`
+- Brave: `chroot /tmp/work/chroot sh -c 'curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" >> /etc/apt/sources.list.d/brave.list && apt-get update && apt-get install -y brave-browser'`
+- Chromium: `chroot /tmp/work/chroot apt-get install -y chromium-browser`
+
+(Social, install only ${selectedSocial})
+- Discord: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && dpkg -i /tmp/discord.deb || apt-get install -f -y'`
+- Telegram: `chroot /tmp/work/chroot apt-get install -y telegram-desktop`
+- Element: `chroot /tmp/work/chroot apt-get install -y element-desktop`
+
+(Security, install only ${selectedSecurity})
+- ufw: `chroot /tmp/work/chroot apt-get install -y ufw`
+- ClamAV: `chroot /tmp/work/chroot apt-get install -y clamav`
+- KeepassXC: `chroot /tmp/work/chroot apt-get install -y keepassxc`
+- Tor Browser: `chroot /tmp/work/chroot apt-get install -y torbrowser-launcher`
+- WireGuard: `chroot /tmp/work/chroot apt-get install -y wireguard`
+
+(Multimedia, install only ${selectedMultimedia})
+- VLC: `chroot /tmp/work/chroot apt-get install -y vlc`
+- MPV: `chroot /tmp/work/chroot apt-get install -y mpv`
+- Pavucontrol: `chroot /tmp/work/chroot apt-get install -y pavucontrol`
+- Spotify: `chroot /tmp/work/chroot sh -c 'curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | gpg --dearmor -o /usr/share/keyrings/spotify.gpg && echo "deb [signed-by=/usr/share/keyrings/spotify.gpg] http://repository.spotify.com stable non-free" >> /etc/apt/sources.list.d/spotify.list && apt-get update && apt-get install -y spotify-client'`
+
+(Productivity, install only ${selectedProductivity})
+- LibreOffice: `chroot /tmp/work/chroot apt-get install -y libreoffice`
+- Evince: `chroot /tmp/work/chroot apt-get install -y evince`
+- OnlyOffice: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/onlyoffice.deb https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb && dpkg -i /tmp/onlyoffice.deb || apt-get install -f -y'`
+- Zettlr: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/zettlr.deb https://github.com/Zettlr/Zettlr/releases/latest/download/Zettlr.deb && dpkg -i /tmp/zettlr.deb || apt-get install -f -y'`
+
+(Devtools, install only ${selectedDevtools})
+- VS Code: `chroot /tmp/work/chroot sh -c 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/packages.microsoft.gpg && echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" >> /etc/apt/sources.list.d/vscode.list && apt-get update && apt-get install -y code'`
+- Neovim: `chroot /tmp/work/chroot apt-get install -y neovim`
+- Git: `chroot /tmp/work/chroot apt-get install -y git`
+- Kitty: `chroot /tmp/work/chroot apt-get install -y kitty`
+- Flatpak: `chroot /tmp/work/chroot apt-get install -y flatpak`
+
+(Gaming, install only ${selectedGaming})
+- Steam: `chroot /tmp/work/chroot sh -c 'dpkg --add-architecture i386 && apt-get update && apt-get install -y steam'`
+- Lutris: `chroot /tmp/work/chroot sh -c 'add-apt-repository -y ppa:lutris-team/lutris && apt-get update && apt-get install -y lutris'`
+- MangoHUD: `chroot /tmp/work/chroot apt-get install -y mangohud`
+- GameMode: `chroot /tmp/work/chroot apt-get install -y gamemode`
+
+---
+
+### 📦 Final Build Requirements
+
+The script must:
+- Follow this structure:
+  1. Mounting
+  2. Installing
+  3. Configuring
+  4. Building
+  5. Complete
+- Build the ISO using `mkarchiso` (Arch) or `genisoimage`/`xorriso` (Debian/Ubuntu)
+- Save final ISO file to `/opt/iso-builder/output`
+
+Failure to echo steps or save the ISO to that path will result in a failed job.

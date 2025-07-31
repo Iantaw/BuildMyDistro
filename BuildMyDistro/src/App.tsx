@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import { GoogleGenAI } from '@google/genai';
 import CodeBlockDemo from './CodeBlockDemo';
+import promptText from './assets/iso-prompt-template.txt?raw';
 
 function App() {
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [selectedOS, setSelectedOS] = useState<string | undefined>(undefined);
   const osOptions = ['Debian', 'Arch', 'Ubuntu'];
+  const [selectedOS, setSelectedOS] = useState<string>(osOptions[1]);;
   const [isClicked, setIsClicked] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
@@ -21,6 +22,16 @@ function App() {
   const [selectedProductivity, setSelectedProductivity] = useState<string[]>([]);
   const [selectedDevtools, setSelectedDevtools] = useState<string[]>([]);
   const [selectedGaming, setSelectedGaming] = useState<string[]>([]);
+
+  const [jobId, setJobId] = useState(null);
+  const [jobStatus, setJobStatus] = useState<any>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [isGeneratingISO, setIsGeneratingISO] = useState(false);
+  const [downloadType, setDownloadType] = useState<'sh' | 'iso' | null>(null);
+  const [showShButton, setShowShButton] = useState(true);
+  const [showIsoButton, setShowIsoButton] = useState(true);
+
+  const SERVER_URL = 'https://fluent-model-earwig.ngrok-free.app';
 
   const toggleSelection = (
     item: string,
@@ -73,9 +84,21 @@ function App() {
     loadApiKey();
   }, []);
 
-  async function handleSubmit() {
+  async function handleSubmit(type: 'sh' | 'iso') {
     setIsClicked(true);
+    setDownloadType(type);
 
+    if (type === 'sh') {
+      setShowIsoButton(false);
+      await generateScriptOnly();
+    } else {
+      setShowShButton(false);
+      setIsGeneratingISO(true);
+      await generateISOFile();
+    }
+  }
+
+  async function generateScriptOnly() {
     if (!apiKey) {
       alert('Sorry! We encountered an error, please try again later.');
       return;
@@ -86,7 +109,220 @@ function App() {
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
-        contents: `
+        contents: promptScript(),
+      });
+
+      setAiResponse(response.text ?? 'No response');
+      setIsDone(true);
+      setIsClicked(false);
+    } catch (error) {
+      console.error('Error generating content:', error);
+      setIsClicked(false);
+    }
+  }
+
+  async function generateISOFile() {
+    if (!apiKey) {
+      alert('Sorry! We encountered an error, please try again later.');
+      setIsClicked(false);
+      setIsGeneratingISO(false);
+      return;
+    }
+
+    try {
+      const ai = new GoogleGenAI({ apiKey });
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: promptISO(),
+      });
+
+      const generatedScript = response.text ?? '';
+
+      if (!generatedScript) {
+        throw new Error('Failed to generate script');
+      }
+
+      const result = await fetch(`${SERVER_URL}/generate-iso`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' },
+        body: JSON.stringify({
+          script: generatedScript,
+          os: selectedOS,
+          filename: `custom-${selectedOS?.toLowerCase()}-${Date.now()}.sh`,
+        }),
+      });
+
+      const json = await result.json();
+
+      if (json.success) {
+        setJobId(json.jobId);
+        pollJobStatus(json.jobId);
+      } else {
+        throw new Error(json.message || 'Failed to start ISO generation');
+      }
+    } catch (error: any) {
+      console.error('Error generating ISO:', error);
+      alert(`Failed to generate ISO: ${error.message}`);
+      setIsClicked(false);
+      setIsGeneratingISO(false);
+    }
+  }
+
+  async function pollJobStatus(jobId: string) {
+    const pollInterval = 5000;
+    const maxPolls = 360;
+    let polls = 0;
+
+    const poll = async () => {
+      try {
+        const response = await fetch(`${SERVER_URL}/job/${jobId}/status`, {
+          headers: {
+            'ngrok-skip-browser-warning': '1'
+          }
+        });
+        const status = await response.json();
+        setJobStatus(status);
+
+        if (status.status === 'completed') {
+          setDownloadUrl(`${SERVER_URL}/download/${jobId}`);
+          setIsClicked(false);
+          setIsGeneratingISO(false);
+          setIsDone(true);
+          return;
+        } else if (status.status === 'failed' || status.status === 'cancelled') {
+          setIsClicked(false);
+          setIsGeneratingISO(false);
+          return;
+        }
+
+        polls++;
+        if (polls < maxPolls) {
+          setTimeout(poll, pollInterval);
+        } else {
+          alert('ISO generation is taking longer than expected. Please check back later.');
+          setIsClicked(false);
+          setIsGeneratingISO(false);
+        }
+      } catch {
+        polls++;
+        if (polls < maxPolls) setTimeout(poll, pollInterval);
+        else {
+          alert('Lost connection to server. Please refresh and try again.');
+          setIsClicked(false);
+          setIsGeneratingISO(false);
+        }
+      }
+    };
+
+    setTimeout(poll, 2000);
+  }
+
+  async function cancelJob() {
+    if (!jobId) return;
+    try {
+      const response = await fetch(`${SERVER_URL}/job/${jobId}`, {
+        method: 'DELETE',
+        headers: {
+          'ngrok-skip-browser-warning': '1'
+        }
+      });
+      if (response.ok) {
+        setIsClicked(false);
+        setIsGeneratingISO(false);
+        setJobStatus(null);
+        setJobId(null);
+      }
+    } catch (error) {
+      console.error('Error cancelling job:', error);
+    }
+  }
+
+  function downloadISO() {
+    if (downloadUrl) {
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `custom-${selectedOS?.toLowerCase()}.iso`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
+  function handleDownload() {
+    const blob = new Blob([aiResponse || ''], { type: 'application/x-sh' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'my-custom-distro.sh';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  function renderSubmitSection() {
+    if (isDone && downloadType === 'sh') {
+      return (
+        <div>
+          <CodeBlockDemo code={aiResponse || ''} language="bash" />
+          <button className="download-button" onClick={handleDownload}>Download my distro!</button>
+          <p className="instructions">Run this .sh file in your selected distro to add these tools!</p>
+        </div>
+      );
+    } else if (isDone && downloadType === 'iso' && downloadUrl) {
+      return (
+        <div>
+          <div className="alert alert-success">
+            <h4>🎉 Your Custom ISO is Ready!</h4>
+            {jobStatus?.isoFile && (
+              <small>File size: {(jobStatus.isoFile.size / 1024 / 1024).toFixed(2)} MB</small>
+            )}
+          </div>
+          <button className="download-button" onClick={downloadISO}>Download Custom ISO</button>
+        </div>
+      );
+    } else if (isGeneratingISO && jobStatus) {
+      return (
+        <div className="progress-container">
+          <h4>🏗️ Building Your Custom ISO</h4>
+          <div className="progress mb-3">
+            <div className="progress-bar progress-bar-striped progress-bar-animated"
+              style={{ width: `${jobStatus.progress}%` }}>
+              {jobStatus.progress}%
+            </div>
+          </div>
+          <p><strong>Status:</strong> {jobStatus.phase || jobStatus.status}</p>
+          <button className="btn btn-outline-danger btn-sm mt-2" onClick={cancelJob}>Cancel</button>
+        </div>
+      );
+    } else if (isClicked) {
+      return (
+        <div className="d-flex flex-column align-items-center">
+          <div className="spinner-border" role="status" />
+          <small className="mt-2">{downloadType === 'iso' ? 'Preparing ISO generation...' : 'Generating script...'}</small>
+        </div>
+      );
+    } else {
+      return (
+        <div className="d-flex gap-2">
+          {showShButton && (
+            <button className="btn btn-primary" onClick={() => handleSubmit('sh')} disabled={!selectedOS}>
+              Generate .sh File
+            </button>
+          )}
+          {showIsoButton && (
+            <button className="btn btn-success" onClick={() => handleSubmit('iso')} disabled={!selectedOS}>
+              Generate ISO File
+            </button>
+          )}
+        </div>
+      );
+    }
+  }
+
+  function promptScript() {
+    return `
         Create a .sh file with the following properties that wil create them using the methods linked.
         Make sure NOT to write anything apart from the .sh file. You should not accnoledge this message or write anything else than the .sh file.
         You should create prints in the terminal explaining what you are doing with the user at every step, you may use emojis in these comments.
@@ -237,150 +473,81 @@ function App() {
         Lutris: sudo add-apt-repository -y ppa:lutris-team/lutris && sudo apt update && sudo apt install -y lutris
         MangoHUD: sudo apt install -y mangohud
         GameMode: sudo apt install -y gamemode
-        `,
-      });
-
-      setAiResponse(response.text ?? 'No response');
-      setIsDone(true);
-    } catch (error) {
-      console.error('Error generating content:', error);
-    }
+        `;
   }
 
-  const handleDownload = () => {
-      const blob = new Blob([aiResponse || ''], { type: 'application/x-sh' });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'my-custom-distro.sh';
-      document.body.appendChild(link);
-      link.click(); 
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-  };
+  function promptISO() {
+    return promptText
+      .replace(/\${selectedOS}/g, selectedOS || '')
+      .replace(/\${selectedBrowsers}/g, selectedBrowsers.join(', '))
+      .replace(/\${selectedSocial}/g, selectedSocial.join(', '))
+      .replace(/\${selectedSecurity}/g, selectedSecurity.join(', '))
+      .replace(/\${selectedMultimedia}/g, selectedMultimedia.join(', '))
+      .replace(/\${selectedProductivity}/g, selectedProductivity.join(', '))
+      .replace(/\${selectedDevtools}/g, selectedDevtools.join(', '))
+      .replace(/\${selectedGaming}/g, selectedGaming.join(', '))
+      .replace(/\${selectedHyprland}/g, selectedHyprland.join(', '));
+  }
 
   return (
-    <>
-      <div className="main-container">
-        <GradientText
-          colors={['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa']}
-          animationSpeed={3}
-          showBorder={false}
-          className="custom-class"
-        >
-          BuildMyDistro
-        </GradientText>
+    <div className="main-container">
+      <GradientText
+        colors={['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa']}
+        animationSpeed={3}
+        showBorder={false}
+        className="custom-class"
+      >
+        BuildMyDistro
+      </GradientText>
 
-        <p className="title-description">A simple way to customize your own Distro!</p>
+      <p className="title-description">A simple way to customize your own Distro!</p>
 
-        <p className="os-description">Operating System</p>
-        <div className="os-selector d-flex justify-content-center gap-2">
-          {osOptions.map(os => (
-            <button
-              key={os}
-              type="button"
-              className={`btn btn-outline-primary ${selectedOS === os ? 'active' : ''}`}
-              data-bs-toggle="button"
-              onClick={() => setSelectedOS(os)}
-            >
-              {os}
-            </button>
-          ))}
-        </div>
-
-        <p className="security-description">Security</p>
-        {createButtonGroup(
-          ['ufw', 'ClamAV', 'KeepassXC', 'Tor Browser', 'WireGuard'],
-          selectedSecurity,
-          setSelectedSecurity,
-          'security-selector'
-        )}
-
-        <p className="browser-description">Browser</p>
-        {createButtonGroup(
-          ['Firefox', 'Brave', 'Chromium'],
-          selectedBrowsers,
-          setSelectedBrowsers,
-          'browsers-selector'
-        )}
-
-        <p className="social-description">Social</p>
-        {createButtonGroup(
-          ['Discord', 'Telegram', 'Element'],
-          selectedSocial,
-          setSelectedSocial,
-          'social-selector'
-        )}
-
-        {selectedOS === 'Arch' && (
-          <>
-            <p className="hyprland-description">Hyprland Customization</p>
-            {createButtonGroup(
-              ['Hyprland', 'Waybar, Wofi, Rofi', 'Pywal', 'Kitty', 'LXAppearance'],
-              selectedHyprland,
-              setSelectedHyprland,
-              'hyprland-customization-selector'
-            )}
-          </>
-        )}
-
-        <p className="multimedia-description">Multimedia</p>
-        {createButtonGroup(
-          ['VLC', 'MPV', 'Pavucontrol', 'Spotify'],
-          selectedMultimedia,
-          setSelectedMultimedia,
-          'multimedia-selector'
-        )}
-
-        <p className="productivity-description">Productivity</p>
-        {createButtonGroup(
-          ['LibreOffice', 'Evince', 'OnlyOffice', 'Zettlr'],
-          selectedProductivity,
-          setSelectedProductivity,
-          'productivity-selector'
-        )}
-
-        <p className="devtools-description">Devtools</p>
-        {createButtonGroup(
-          ['VS Code', 'Neovim', 'Git', 'Kitty', 'Flatpak'],
-          selectedDevtools,
-          setSelectedDevtools,
-          'devtools-selector'
-        )}
-
-        <p className="gaming-description">Gaming</p>
-        {createButtonGroup(
-          ['Steam', 'Lutris', 'MangoHUD', 'GameMode'],
-          selectedGaming,
-          setSelectedGaming,
-          'gaming-selector'
-        )}
-
-        <p className="disclaimer">
-          How this works: This will generate a .sh file for you to execute to install the above.
-          ISO file generation coming in future iteration!
-        </p>
-
-        <div className="submit-button">
-          {isDone ? (
-            <div>
-              <CodeBlockDemo code={aiResponse || ''} language="bash" />
-              <button className='download-button' onClick={handleDownload}>Download my distro!</button>
-              <p className='instructions'>Run this .sh file in your selected distro to add these tools!</p>
-            </div>
-          ) : isClicked ? (
-            <div className="spinner-border" role="status">
-              <span className="sr-only"></span>
-            </div>
-          ) : (
-            <button className="btn btn-success mt-4" onClick={handleSubmit}>
-              Generate Build
-            </button>
-          )}
-        </div>
+      <p className="os-description">Operating System</p>
+      <div className="os-selector d-flex justify-content-center gap-2">
+        {osOptions.map(os => (
+          <button
+            key={os}
+            type="button"
+            className={`btn btn-outline-primary ${selectedOS === os ? 'active' : ''}`}
+            onClick={() => setSelectedOS(os)}
+          >
+            {os}
+          </button>
+        ))}
       </div>
-    </>
+
+      <p className="security-description">Security</p>
+      {createButtonGroup(['ufw', 'ClamAV', 'KeepassXC', 'Tor Browser', 'WireGuard'], selectedSecurity, setSelectedSecurity, 'security-selector')}
+
+      <p className="browser-description">Browser</p>
+      {createButtonGroup(['Firefox', 'Brave', 'Chromium'], selectedBrowsers, setSelectedBrowsers, 'browsers-selector')}
+
+      <p className="social-description">Social</p>
+      {createButtonGroup(['Discord', 'Telegram', 'Element'], selectedSocial, setSelectedSocial, 'social-selector')}
+
+      {selectedOS === 'Arch' && (
+        <>
+          <p className="hyprland-description">Hyprland Customization</p>
+          {createButtonGroup(['Hyprland', 'Waybar, Wofi, Rofi', 'Pywal', 'Kitty', 'LXAppearance'], selectedHyprland, setSelectedHyprland, 'hyprland-customization-selector')}
+        </>
+      )}
+
+      <p className="multimedia-description">Multimedia</p>
+      {createButtonGroup(['VLC', 'MPV', 'Pavucontrol', 'Spotify'], selectedMultimedia, setSelectedMultimedia, 'multimedia-selector')}
+
+      <p className="productivity-description">Productivity</p>
+      {createButtonGroup(['LibreOffice', 'Evince', 'OnlyOffice', 'Zettlr'], selectedProductivity, setSelectedProductivity, 'productivity-selector')}
+
+      <p className="devtools-description">Devtools</p>
+      {createButtonGroup(['VS Code', 'Neovim', 'Git', 'Kitty', 'Flatpak'], selectedDevtools, setSelectedDevtools, 'devtools-selector')}
+
+      <p className="gaming-description">Gaming</p>
+      {createButtonGroup(['Steam', 'Lutris', 'MangoHUD', 'GameMode'], selectedGaming, setSelectedGaming, 'gaming-selector')}
+
+      <p className="disclaimer">How this works: This will generate a .sh file or ISO for your system!</p>
+
+      <div className="submit-button">{renderSubmitSection()}</div>
+    </div>
   );
 }
 
