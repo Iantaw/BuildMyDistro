@@ -34,53 +34,53 @@ You are to generate only a valid `.sh` file that builds a customized Linux ISO u
 **Arch Linux ISO:**
 
 (Browsers, install only ${selectedBrowsers})
-- Firefox: `echo 'firefox' >> /tmp/work/packages.x86_64`
-- Brave: `echo -e 'brave-bin\nyay' >> /tmp/work/packages.x86_64`
-- Chromium: `echo 'chromium' >> /tmp/work/packages.x86_64`
+- Firefox: `sudo pacman -S --noconfirm firefox`
+- Brave: `yay -S --noconfirm brave-bin`
+- Chromium: `sudo pacman -S --noconfirm chromium`
 
 (Social, install only ${selectedSocial})
-- Discord: `echo 'discord' >> /tmp/work/packages.x86_64`
-- Telegram: `echo 'telegram-desktop' >> /tmp/work/packages.x86_64`
-- Element: `echo 'element-desktop' >> /tmp/work/packages.x86_64`
+- Discord: `sudo pacman -S --noconfirm discord`
+- Telegram: `sudo pacman -S --noconfirm telegram-desktop`
+- Element: `sudo pacman -S --noconfirm element-desktop`
 
 (Security, install only ${selectedSecurity})
-- ufw: `echo 'ufw' >> /tmp/work/packages.x86_64`
-- ClamAV: `echo 'clamav' >> /tmp/work/packages.x86_64`
-- KeepassXC: `echo 'keepassxc' >> /tmp/work/packages.x86_64`
-- Tor Browser: `echo 'tor-browser' >> /tmp/work/packages.x86_64 && echo 'yay' >> /tmp/work/packages.x86_64`
-- WireGuard: `echo 'wireguard-tools' >> /tmp/work/packages.x86_64`
+- ufw: `sudo pacman -S --noconfirm ufw`
+- ClamAV: `sudo pacman -S --noconfirm clamav`
+- KeepassXC: `sudo pacman -S --noconfirm keepassxc`
+- Tor Browser: `yay -S --noconfirm tor-browser`
+- WireGuard: `sudo pacman -S --noconfirm wireguard-tools`
 
 (Multimedia, install only ${selectedMultimedia})
-- VLC: `echo 'vlc' >> /tmp/work/packages.x86_64`
-- MPV: `echo 'mpv' >> /tmp/work/packages.x86_64`
-- Pavucontrol: `echo 'pavucontrol' >> /tmp/work/packages.x86_64`
-- Spotify: `echo -e 'spotify\nyay' >> /tmp/work/packages.x86_64`
+- VLC: `sudo pacman -S --noconfirm vlc`
+- MPV: `sudo pacman -S --noconfirm mpv`
+- Pavucontrol: `sudo pacman -S --noconfirm pavucontrol`
+- Spotify: `yay -S --noconfirm spotify`
 
 (Productivity, install only ${selectedProductivity})
-- LibreOffice: `echo 'libreoffice-fresh' >> /tmp/work/packages.x86_64`
-- Evince: `echo 'evince' >> /tmp/work/packages.x86_64`
-- OnlyOffice: `echo -e 'onlyoffice-bin\nyay' >> /tmp/work/packages.x86_64`
-- Zettlr: `echo -e 'zettlr-bin\nyay' >> /tmp/work/packages.x86_64`
+- LibreOffice: `sudo pacman -S --noconfirm libreoffice-fresh`
+- Evince: `sudo pacman -S --noconfirm evince`
+- OnlyOffice: `yay -S --noconfirm onlyoffice-bin`
+- Zettlr: `yay -S --noconfirm zettlr-bin`
 
 (Devtools, install only ${selectedDevtools})
-- VS Code: `echo -e 'visual-studio-code-bin\nyay' >> /tmp/work/packages.x86_64`
-- Neovim: `echo 'neovim' >> /tmp/work/packages.x86_64`
-- Git: `echo 'git' >> /tmp/work/packages.x86_64`
-- Kitty: `echo 'kitty' >> /tmp/work/packages.x86_64`
-- Flatpak: `echo 'flatpak' >> /tmp/work/packages.x86_64`
+- VS Code: `yay -S --noconfirm visual-studio-code-bin`
+- Neovim: `sudo pacman -S --noconfirm neovim`
+- Git: `sudo pacman -S --noconfirm git`
+- Kitty: `sudo pacman -S --noconfirm kitty`
+- Flatpak: `sudo pacman -S --noconfirm flatpak`
 
 (Gaming, install only ${selectedGaming})
-- Steam: `echo 'steam' >> /tmp/work/packages.x86_64`
-- Lutris: `echo 'lutris' >> /tmp/work/packages.x86_64`
-- MangoHUD: `echo 'mangohud' >> /tmp/work/packages.x86_64`
-- GameMode: `echo 'gamemode' >> /tmp/work/packages.x86_64`
+- Steam: `sudo pacman -S --noconfirm steam`
+- Lutris: `sudo pacman -S --noconfirm lutris`
+- MangoHUD: `sudo pacman -S --noconfirm mangohud`
+- GameMode: `sudo pacman -S --noconfirm gamemode`
 
 (Hyprland Customization, install only ${selectedHyprland})
-- Hyprland: `echo 'hyprland' >> /tmp/work/packages.x86_64`
-- Waybar, Wofi, Rofi: `echo -e 'waybar\nwofi\nrofi' >> /tmp/work/packages.x86_64`
-- Pywal: `echo 'python-pywal' >> /tmp/work/packages.x86_64`
-- Kitty: `echo 'kitty' >> /tmp/work/packages.x86_64`
-- LXAppearance: `echo 'lxappearance' >> /tmp/work/packages.x86_64`
+- Hyprland: `sudo pacman -S --noconfirm hyprland`
+- Waybar, Wofi, Rofi: `sudo pacman -S --noconfirm waybar wofi rofi`
+- Pywal: `sudo pacman -S --noconfirm python-pywal`
+- Kitty: `sudo pacman -S --noconfirm kitty`
+- LXAppearance: `sudo pacman -S --noconfirm lxappearance`
 
 ---
 
