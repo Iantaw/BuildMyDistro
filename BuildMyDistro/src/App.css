@@ -250,8 +250,9 @@ body {
 
 .submit-button {
   position: relative;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  text-align: center;
   margin-bottom: 30px;
 }
 
