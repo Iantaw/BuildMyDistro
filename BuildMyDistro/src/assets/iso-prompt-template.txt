@@ -101,55 +101,55 @@ deb http://security.debian.org/debian-security book
 Resume as normal for both debian and ubuntu below.
 
 (Browsers, install only ${selectedBrowsers})
-- Firefox: `chroot /tmp/work/chroot apt-get install -y firefox`
-- Brave: `chroot /tmp/work/chroot sh -c 'curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" >> /etc/apt/sources.list.d/brave.list && apt-get update && apt-get install -y brave-browser'`
-- Chromium: `chroot /tmp/work/chroot apt-get install -y chromium-browser`
+- Firefox: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y firefox`
+- Brave: `chroot /tmp/work/chroot sh -c 'curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" >> /etc/apt/sources.list.d/brave.list && apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y brave-browser'`
+- Chromium: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y chromium-browser`
 
 (Social, install only ${selectedSocial})
-- Discord: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && dpkg -i /tmp/discord.deb || apt-get install -f -y'`
-- Telegram: `chroot /tmp/work/chroot apt-get install -y telegram-desktop`
-- Element: `chroot /tmp/work/chroot apt-get install -y element-desktop`
+- Discord: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && dpkg -i /tmp/discord.deb || env DEBIAN_FRONTEND=noninteractive apt-get install -f -y'`
+- Telegram: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y telegram-desktop`
+- Element: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y element-desktop`
 
 (Security, install only ${selectedSecurity})
-- ufw: `chroot /tmp/work/chroot apt-get install -y ufw`
-- ClamAV: `chroot /tmp/work/chroot apt-get install -y clamav`
-- KeepassXC: `chroot /tmp/work/chroot apt-get install -y keepassxc`
-- Tor Browser: `chroot /tmp/work/chroot apt-get install -y torbrowser-launcher`
-- WireGuard: `chroot /tmp/work/chroot apt-get install -y wireguard`
+- ufw: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y ufw`
+- ClamAV: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y clamav`
+- KeepassXC: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y keepassxc`
+- Tor Browser: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y torbrowser-launcher`
+- WireGuard: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y wireguard`
 
 DESKTOP Environment IS ONLY FOR DEBIAN!!! DO NOT RUN DESKTOP ENVIRONMENT ON UBUNTU!!!
 (Desktop Environment, install only ${selectedDebianEnvironment})
-- KDE Plasma: `sudo chroot /tmp/work/chroot apt-get install -y plasma-desktop`
-- GNOME: `sudo chroot /tmp/work/chroot apt-get install -y ubuntu-desktop`
-- Xfce: `sudo chroot /tmp/work/chroot apt-get install -y xubuntu-desktop`
+- KDE Plasma: `sudo chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y plasma-desktop`
+- GNOME: `sudo chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y gnome`
+- Xfce: `sudo chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y task-xfce-desktop lightdm`
 - LXDE: `sudo chroot /tmp/work/chroot apt-get install -y lxde`
-- LXQ1: `sudo chroot /tmp/work/chroot apt-get install -y lubuntu-desktop`
-- MATE: `sudo chroot /tmp/work/chroot apt-get install -y mate-desktop-environment mate-desktop-environment-extras ubuntu-mate-themes`
+- LXQ1: `sudo chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y lxqt sddm`
+- MATE: `sudo chroot /tmp/work/chroot apt-get install -y mate-desktop-environment mate-desktop-environment-extras lightdm lightdm-gtk-greeter`
 
 (Multimedia, install only ${selectedMultimedia})
-- VLC: `chroot /tmp/work/chroot apt-get install -y vlc`
-- MPV: `chroot /tmp/work/chroot apt-get install -y mpv`
-- Pavucontrol: `chroot /tmp/work/chroot apt-get install -y pavucontrol`
-- Spotify: `chroot /tmp/work/chroot sh -c 'curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | gpg --dearmor -o /usr/share/keyrings/spotify.gpg && echo "deb [signed-by=/usr/share/keyrings/spotify.gpg] http://repository.spotify.com stable non-free" >> /etc/apt/sources.list.d/spotify.list && apt-get update && apt-get install -y spotify-client'`
+- VLC: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y vlc`
+- MPV: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y mpv`
+- Pavucontrol: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y pavucontrol`
+- Spotify: `chroot /tmp/work/chroot sh -c 'curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg | gpg --dearmor -o /usr/share/keyrings/spotify.gpg && echo "deb [signed-by=/usr/share/keyrings/spotify.gpg] http://repository.spotify.com stable non-free" >> /etc/apt/sources.list.d/spotify.list && apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y spotify-client'`
 
 (Productivity, install only ${selectedProductivity})
-- LibreOffice: `chroot /tmp/work/chroot apt-get install -y libreoffice`
-- Evince: `chroot /tmp/work/chroot apt-get install -y evince`
-- OnlyOffice: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/onlyoffice.deb https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb && dpkg -i /tmp/onlyoffice.deb || apt-get install -f -y'`
-- Zettlr: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/zettlr.deb https://github.com/Zettlr/Zettlr/releases/latest/download/Zettlr.deb && dpkg -i /tmp/zettlr.deb || apt-get install -f -y'`
+- LibreOffice: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y libreoffice`
+- Evince: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y evince`
+- OnlyOffice: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/onlyoffice.deb https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb && dpkg -i /tmp/onlyoffice.deb || env DEBIAN_FRONTEND=noninteractive apt-get install -f -y'`
+- Zettlr: `chroot /tmp/work/chroot sh -c 'wget -O /tmp/zettlr.deb https://github.com/Zettlr/Zettlr/releases/latest/download/Zettlr.deb && dpkg -i /tmp/zettlr.deb || env DEBIAN_FRONTEND=noninteractive apt-get install -f -y'`
 
 (Devtools, install only ${selectedDevtools})
-- VS Code: `chroot /tmp/work/chroot sh -c 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/packages.microsoft.gpg && echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" >> /etc/apt/sources.list.d/vscode.list && apt-get update && apt-get install -y code'`
-- Neovim: `chroot /tmp/work/chroot apt-get install -y neovim`
-- Git: `chroot /tmp/work/chroot apt-get install -y git`
-- Kitty: `chroot /tmp/work/chroot apt-get install -y kitty`
-- Flatpak: `chroot /tmp/work/chroot apt-get install -y flatpak`
+- VS Code: `chroot /tmp/work/chroot sh -c 'wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/packages.microsoft.gpg && echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" >> /etc/apt/sources.list.d/vscode.list && apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y code'`
+- Neovim: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y neovim`
+- Git: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y git`
+- Kitty: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y kitty`
+- Flatpak: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y flatpak`
 
 (Gaming, install only ${selectedGaming})
-- Steam: `chroot /tmp/work/chroot sh -c 'dpkg --add-architecture i386 && apt-get update && apt-get install -y steam'`
-- Lutris: `chroot /tmp/work/chroot sh -c 'add-apt-repository -y ppa:lutris-team/lutris && apt-get update && apt-get install -y lutris'`
-- MangoHUD: `chroot /tmp/work/chroot apt-get install -y mangohud`
-- GameMode: `chroot /tmp/work/chroot apt-get install -y gamemode`
+- Steam: `chroot /tmp/work/chroot sh -c 'dpkg --add-architecture i386 && apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y steam'`
+- Lutris: `chroot /tmp/work/chroot sh -c 'add-apt-repository -y ppa:lutris-team/lutris && apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y lutris'`
+- MangoHUD: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y mangohud`
+- GameMode: `chroot /tmp/work/chroot env DEBIAN_FRONTEND=noninteractive apt-get install -y gamemode`
 
 ---
 
